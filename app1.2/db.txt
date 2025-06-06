@@ -1,0 +1,67 @@
+CREATE TABLE clients (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    contact_info TEXT
+);
+
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+-- Таблица для хранения заказов
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    client_id INTEGER NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE -- Статус заказа (активный/завершенный)
+);
+
+-- Таблица для хранения товаров в заказе
+CREATE TABLE order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    is_delivered BOOLEAN NOT NULL DEFAULT FALSE, -- Статус доставки товара
+    UNIQUE (order_id, product_id) -- Уникальная комбинация заказа и товара
+);
+
+
+-- Индекс для ускорения проверки доставки
+CREATE INDEX idx_order_items_delivery 
+ON order_items (order_id, is_delivered);
+
+-- Функция-триггер
+CREATE OR REPLACE FUNCTION check_order_completion()
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    undelivered_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO undelivered_count
+    FROM order_items
+    WHERE 
+        order_id = NEW.order_id 
+        AND is_delivered = false;
+
+    IF undelivered_count = 0 THEN
+        UPDATE orders 
+        SET is_active = false 
+        WHERE id = NEW.order_id;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+-- Сам триггер
+CREATE TRIGGER order_completion_trigger
+AFTER UPDATE OF is_delivered ON order_items
+FOR EACH ROW
+EXECUTE FUNCTION check_order_completion();
+
+
+ALTER TABLE orders 
+ADD COLUMN total_amount DECIMAL(10,2) NOT NULL;

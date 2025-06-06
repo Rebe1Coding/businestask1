@@ -1,0 +1,19 @@
+INSERT INTO clients (name, contact_info) VALUES
+('Ирина Смирнова', 'irina.smirnova@mail.ru, +7-901-234-5678'),
+('Андрей Козлов', 'andrey.kozlov@yandex.ru, +7-905-123-4567'),
+('Мария Васнецова', 'maria.vasnetsova@gmail.com, +7-916-789-0123'),
+('Павел Новиков', 'pavel.novikov@mail.ru, +7-925-456-7890'),
+('Екатерина Морозова', 'ekaterina.morozova@yandex.ru, +7-903-321-6549');
+
+
+INSERT INTO products (name, price) VALUES
+('Робот-пылесос Xiaomi Mi Robot Vacuum', 19999.99),
+('Электрический чайник Bosch TWK7201', 3499.50),
+('Набор кастрюль Tefal Ingenio 5 предметов', 8990.00),
+('Утюг с парогенератом Philips PerfectCare', 12499.00),
+('Кофемашина DeLonghi Magnifica S', 45990.00),
+('Плед из верблюжьей шерсти 140x200 см', 2990.00),
+('Настольная лампа с USB-портом', 1599.99),
+('Микроволновая печь Samsung ME83KRW-1', 12990.00),
+('Набор кухонных ножей Samura 6 предметов', 5590.00),
+('Электронные весы REDMOND SkyBalance 741S', 2390.00);
